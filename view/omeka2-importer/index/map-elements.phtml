@@ -21,6 +21,7 @@ $backUrl = $this->url('admin/omeka2importer');
         <li class="active"><a href="#omeka2-import-basics-fieldset"><?php echo $this->translate('Basic Import Settings'); ?></a></li>
         <li><a href="#omeka2-import-elements-map-fieldset"><?php echo $this->translate('Map to Omeka S Properties'); ?></a></li>
         <li><a href="#omeka2-import-types-map-fieldset"><?php echo $this->translate('Map to Omeka S Classes'); ?></a></li>
+        <li><a href="#omeka2-import-exclude-fieldset"><?php echo $this->translate('Exclude'); ?></a></li>
     </ul>
 </nav>
 <input name='endpoint' value='<?php echo $endpoint; ?>' type='hidden' />
@@ -107,6 +108,15 @@ $backUrl = $this->url('admin/omeka2importer');
     </table>
     <?php
     echo $this->resourceClassSelector('Select class to map. Click an Omeka 2 item type as the target, then select the resource class for it. Omeka S items can have only one resource class.', true);    
+    ?>
+</fieldset>
+
+<fieldset id="omeka2-import-exclude-fieldset" class="section">
+    <?php
+        $excludedItemIds = new Zend\Form\Element\Textarea('excluded-item-ids');
+        $excludedItemIds->setLabel($this->translate('Excluded item ids'));
+        $excludedItemIds->setOption('info', $this->translate('You can exclude items from import by entering their Omeka identifiers in the text box below (1 identifier by line)'));
+        echo $this->formRow($excludedItemIds);
     ?>
 </fieldset>
 
