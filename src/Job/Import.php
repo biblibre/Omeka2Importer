@@ -24,6 +24,8 @@ class Import extends AbstractJob
 
     protected $htmlElementMap;
 
+    protected $excludedItemIds;
+
     protected $dctermsTitleId;
 
     protected $logger;
@@ -44,6 +46,9 @@ class Import extends AbstractJob
         }
 
         $this->htmlElementMap = $this->getArg('html-element', array());
+
+        $excludedItemIds = preg_split('/\s+/', $this->getArg('excluded-item-ids'));
+        $this->excludedItemIds = array_combine($excludedItemIds, $excludedItemIds);
 
         $this->addedCount = 0;
         $this->updatedCount = 0;
@@ -186,6 +191,11 @@ class Import extends AbstractJob
             $toCreate = array();
             $toUpdate = array();
             foreach ($itemsData as $itemData) {
+                if (array_key_exists($itemData['id'], $this->excludedItemIds)) {
+                    $this->logger->info(sprintf('Item %s excluded', $itemData['id']));
+                    continue;
+                }
+
                 $itemJson = array();
                 $itemJson = $this->buildResourceJson($itemData, $options);
                     //confusingly named, importRecord is the record of importing the item
