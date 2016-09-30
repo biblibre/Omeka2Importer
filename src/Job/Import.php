@@ -399,6 +399,15 @@ class Import extends AbstractJob
                                 'type' => 'literal',
                             ];
                         }
+                    } elseif ($elTextData['element']['name'] === 'Date'
+                        && $elTextData['element_set']['name'] === 'Dublin Core')
+                    {
+                        $value = $this->normalizeDate($value);
+                        $propertyJson[$propertyId][] = [
+                            '@value' => $value,
+                            'property_id' => $propertyId,
+                            'type' => 'literal',
+                        ];
                     } else {
                         $propertyJson[$propertyId][] = array(
                                 '@value' => $value,
@@ -435,5 +444,20 @@ class Import extends AbstractJob
         $linksHeaders = $response->getHeaders()->get('Link')->toString();
 
         return strpos($linksHeaders, 'rel="next"');
+    }
+
+    protected function normalizeDate($value)
+    {
+        $matches = [];
+
+        if (preg_match('|(\d{2})/(\d{2})/(\d{4})|', $value, $matches)) {
+            $value = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+        } elseif (preg_match('|(\d{2})/(\d)/(\d{4})|', $value, $matches)) {
+            $value = $matches[3] . '-' . '0' . $matches[2] . '-' . $matches[1];
+        } elseif (preg_match('|(\d{4})-(\d{4})|', $value, $matches)) {
+            $value = $matches[1] . '/' . $matches[2];
+        }
+
+        return trim($value);
     }
 }
