@@ -371,11 +371,26 @@ class Import extends AbstractJob
             if (array_key_exists($elementId, $this->elementMap)) {
                 //loop through all the mappings for that element and build json
                 foreach ($this->elementMap[$elementId] as $propertyId) {
-                    $propertyJson[$propertyId][] = array(
-                            '@value' => $value,
-                            'property_id' => $propertyId,
-                            'type' => 'literal',
-                            );
+                    if ($elTextData['element']['name'] === 'Source'
+                        && $elTextData['element_set']['name'] === 'Dublin Core'
+                        && strpos($value, ';') !== false)
+                    {
+                        $sources = explode(';', $value, 2);
+                        $sources = array_reverse($sources);
+                        foreach ($sources as $source) {
+                            $propertyJson[$propertyId][] = [
+                                '@value' => trim($source),
+                                'property_id' => $propertyId,
+                                'type' => 'literal',
+                            ];
+                        }
+                    } else {
+                        $propertyJson[$propertyId][] = array(
+                                '@value' => $value,
+                                'property_id' => $propertyId,
+                                'type' => 'literal',
+                                );
+                    }
                 }
             }
         }
